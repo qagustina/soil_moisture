@@ -21,7 +21,7 @@ def get_fn():
         
         for hour in range(0, 24, 3):
             file_name = f'GLDAS_NOAH025_3H.A{date_str}.{hour:02d}00.021.nc4'
-            file_names.append(file_name) # file_names tiene los nombres de archivo para los N días
+            file_names.append(file_name) 
     return file_names
 
 
@@ -46,8 +46,6 @@ def filter_data_region(file_path, point_lat, point_lon):
     lon = ds.variables['lon'][:]
     lat = ds.variables['lat'][:]
     time_var = ds.variables['time']
-
-    # Encontrar el índice más cercano a las coordenadas del punto de interés
     lat_index = np.abs(lat - point_lat).argmin()
     lon_index = np.abs(lon - point_lon).argmin()
 
@@ -74,7 +72,6 @@ def acum_data():
     for file_name in file_names:
         file_path = os.path.join(data_dir, file_name)
         point_lat, point_lon = get_latlon()
-        # como no uso lon y lat filtered agrego el guion bajo
         soil_data, rain_data, _, _, time_values = filter_data_region(file_path, point_lat, point_lon)
 
         soil_data_combined.extend(soil_data)
@@ -98,8 +95,6 @@ def plot_vble_region():
 
     plt.figure(figsize=(10, 6))
     plt.plot(time_numeric, soil_data_combined, linestyle='-')
-    #t = plt.title('GLDAS NOAH-Total precipitation rate\n\n15 days Mar 2015 - Sáenz Peña,Chaco\n')
-    #t = plt.title('GLDAS NOAH-Soil Moisture (0_10cm)\n\n15 days Mar 2015 - Manfredi,Córdoba\n')
     t = plt.title('GLDAS NOAH-Soil Moisture (0_10cm)\n\n15 days Mar 2015 - Sáenz Peña,Chaco\n')
     t.set_fontsize(12)
     t.set_fontname('monospace')
@@ -107,13 +102,8 @@ def plot_vble_region():
     plt.xlabel('Time', fontsize=10)
     # 0,01 m3/m3
     plt.ylabel('Total precipitation rate (kg m-2 s1) = (mm seg)', fontsize=10)
-    #plt.ylabel('Soil Moisture (0_10cm) = (0,01 m3/m3)', fontsize=10)
-    #plt.grid(True)
-    #plt.xticks(time_numeric, time_values_combined, rotation=90, fontsize=6)
     plt.savefig('soil_region_sp.png', dpi=300, bbox_inches='tight')
     
-#plot_vble_region()
-
 
 def plot_vbles_region():
     '''
@@ -125,7 +115,6 @@ def plot_vbles_region():
     fig, ax1 = plt.subplots()
 
     fig = fig.suptitle('GLDAS NOAH\n15 days Mar 2015 - Manfredi,Córdoba', fontsize=9.5)
-    #fig = fig.suptitle('GLDAS NOAH\n15 days Mar 2015 - Sáenz Peña,Chaco', fontsize=9.5)
     fig.set_fontweight('semibold')
     fig.set_fontname('monospace')
 
@@ -135,7 +124,7 @@ def plot_vbles_region():
     ax1.legend()
     ax1.tick_params(axis='y', labelcolor=color_one)
 
-    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2 = ax1.twinx()  
 
     color = 'royalblue'
 
@@ -151,11 +140,6 @@ def plot_vbles_region():
     lines = lines1 + lines2
     labels = labels1 + labels2
     ax1.legend(lines, labels, loc='upper right', fontsize=8)
-
-    # Modificar esto 
-    #ax1.set_xticks(time_numeric[::len(time_numeric)//8]) #se selecciona cada 1/8 de las etiquetas de fecha y hora 
-    #ax1.set_xticklabels(time_values_combined[::len(time_values_combined)//8], rotation=45, fontsize=6)
-
 
     plt.tight_layout()
     plt.savefig('sm_tpr_point_manfre.png', dpi=300, bbox_inches='tight')
